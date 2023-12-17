@@ -71,7 +71,7 @@ if __name__ == '__main__':
         '--input_pairs', type=str, default='assets/scannet_sample_pairs_with_gt.txt',
         help='Path to the list of image pairs')
     parser.add_argument(
-        '--input_dir', type=str, default='assets/scannet_sample_images/',
+        '--input_dir', type=str, default='assets/scannet_sample_images/0109/',
         help='Path to the directory that contains the images')
     parser.add_argument(
         '--output_dir', type=str, default='dump_match_pairs/',
@@ -91,24 +91,24 @@ if __name__ == '__main__':
         help='Resize the image after casting uint8 to float')
 
     parser.add_argument(
-        '--superglue', choices={'indoor', 'outdoor'}, default='indoor',
+        '--superglue', choices={'indoor', 'outdoor'}, default='outdoor',
         help='SuperGlue weights')
     parser.add_argument(
         '--max_keypoints', type=int, default=1024,
         help='Maximum number of keypoints detected by Superpoint'
              ' (\'-1\' keeps all keypoints)')
     parser.add_argument(
-        '--keypoint_threshold', type=float, default=0.005,
+        '--keypoint_threshold', type=float, default=0.1,
         help='SuperPoint keypoint detector confidence threshold')
     parser.add_argument(
         '--nms_radius', type=int, default=4,
         help='SuperPoint Non Maximum Suppression (NMS) radius'
         ' (Must be positive)')
     parser.add_argument(
-        '--sinkhorn_iterations', type=int, default=20,
+        '--sinkhorn_iterations', type=int, default=100,
         help='Number of Sinkhorn iterations performed by SuperGlue')
     parser.add_argument(
-        '--match_threshold', type=float, default=0.2,
+        '--match_threshold', type=float, default=0.7,
         help='SuperGlue match threshold')
 
     parser.add_argument(
@@ -143,13 +143,10 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     print(opt)
 
-    assert not (
-        opt.opencv_display and not opt.viz), 'Must use --viz with --opencv_display'
-    assert not (
-        opt.opencv_display and not opt.fast_viz), 'Cannot use --opencv_display without --fast_viz'
+    assert not (opt.opencv_display and not opt.viz), 'Must use --viz with --opencv_display'
+    assert not (opt.opencv_display and not opt.fast_viz), 'Cannot use --opencv_display without --fast_viz'
     assert not (opt.fast_viz and not opt.viz), 'Must use --viz with --fast_viz'
-    assert not (opt.fast_viz and opt.viz_extension ==
-                'pdf'), 'Cannot use pdf extension with --fast_viz'
+    assert not (opt.fast_viz and opt.viz_extension == 'pdf'), 'Cannot use pdf extension with --fast_viz'
 
     if len(opt.resize) == 2 and opt.resize[1] == -1:
         opt.resize = opt.resize[0:1]
@@ -214,8 +211,7 @@ if __name__ == '__main__':
         stem0, stem1 = Path(name0).stem, Path(name1).stem
         matches_path = output_dir / '{}_{}_matches.npz'.format(stem0, stem1)
         eval_path = output_dir / '{}_{}_evaluation.npz'.format(stem0, stem1)
-        viz_path = output_dir / \
-            '{}_{}_matches.{}'.format(stem0, stem1, opt.viz_extension)
+        viz_path = output_dir / '{}_{}_matches.{}'.format(stem0, stem1, opt.viz_extension)
         viz_eval_path = output_dir / \
             '{}_{}_evaluation.{}'.format(stem0, stem1, opt.viz_extension)
 
