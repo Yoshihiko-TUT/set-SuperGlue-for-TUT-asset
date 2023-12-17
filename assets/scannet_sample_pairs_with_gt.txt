@@ -1,2 +1,0 @@
-pet1.png pet2.png
-pet1.png pet1.png
